@@ -1,104 +1,127 @@
+import { useSyncExternalStore } from "react";
 import { db } from "./db";
 import { supabase } from "./supabase";
-import type {
-  LocalProperty,
-  LocalVisit,
-  Property,
-  Visit,
-} from "../../../packages/domain";
-const inFlight = new Map<string, Promise<void>>();
+import { syncOnce, type RemoteStore } from "./sync-core";
+import type { Property, Visit, VisitAnswer } from "../../../packages/domain";
+const inFlight = new Map<string, Promise<void>>(),
+  rerun = new Set<string>();
+const timers = new Map<string, ReturnType<typeof setTimeout>>(),
+  firstChange = new Map<string, number>();
+type SyncState = { syncing: boolean; error: string; lastSync: string | null };
+const states = new Map<string, SyncState>(),
+  listeners = new Set<() => void>();
+const fallback: SyncState = { syncing: false, error: "", lastSync: null };
+const emit = (id: string, patch: Partial<SyncState>) => {
+  states.set(id, { ...(states.get(id) ?? fallback), ...patch });
+  listeners.forEach((fn) => fn());
+};
+const subscribe = (fn: () => void) => {
+  listeners.add(fn);
+  return () => {
+    listeners.delete(fn);
+  };
+};
+export function useSyncState(userId: string) {
+  return useSyncExternalStore(subscribe, () => states.get(userId) ?? fallback);
+}
+async function listAll<T>(table: string, userId: string): Promise<T[]> {
+  const all: T[] = [];
+  for (let start = 0; ; start += 500) {
+    const { data, error } = await supabase
+      .from(table)
+      .select("*")
+      .eq("user_id", userId)
+      .order("id")
+      .range(start, start + 499);
+    if (error) throw error;
+    all.push(...(data as T[]));
+    if (data.length < 500) return all;
+  }
+}
+function remoteFor(userId: string): RemoteStore {
+  const put = async <T extends Property | Visit | VisitAnswer>(
+    table: string,
+    row: T,
+    onConflict = "id",
+  ) => {
+    const { data, error } = await supabase
+      .from(table)
+      .upsert(row, { onConflict })
+      .select()
+      .single();
+    if (error) throw error;
+    return data as T;
+  };
+  return {
+    userId: async () => {
+      const { data, error } = await supabase.auth.getSession();
+      if (error) throw error;
+      return data.session?.user.id;
+    },
+    properties: () => listAll<Property>("properties", userId),
+    visits: () => listAll<Visit>("visits", userId),
+    answers: () => listAll<VisitAnswer>("visit_answers", userId),
+    putProperty: (row) => put("properties", row),
+    putVisit: (row) => put("visits", row),
+    putAnswer: (row) => put("visit_answers", row, "visit_id,question_id"),
+    deleteAnswer: async (id) => {
+      const { error } = await supabase
+        .from("visit_answers")
+        .delete()
+        .eq("id", id)
+        .eq("user_id", userId);
+      if (error) throw error;
+    },
+  };
+}
 export function synchronize(userId: string): Promise<void> {
+  if (!navigator.onLine) return Promise.resolve();
   const current = inFlight.get(userId);
-  if (current) return current;
-  const task = runSync(userId).finally(() => inFlight.delete(userId));
+  if (current) {
+    rerun.add(userId);
+    return current;
+  }
+  clearTimeout(timers.get(userId));
+  timers.delete(userId);
+  firstChange.delete(userId);
+  emit(userId, {
+    syncing: true,
+    error: "",
+    lastSync:
+      states.get(userId)?.lastSync ??
+      localStorage.getItem(`lv:lastSync:${userId}`),
+  });
+  const task = (async () => {
+    do {
+      rerun.delete(userId);
+      await syncOnce(db, remoteFor(userId), userId);
+    } while (rerun.has(userId) && navigator.onLine);
+    const lastSync = new Date().toISOString();
+    localStorage.setItem(`lv:lastSync:${userId}`, lastSync);
+    emit(userId, { lastSync, error: "" });
+  })()
+    .catch((e) => {
+      emit(userId, { error: e instanceof Error ? e.message : String(e) });
+      throw e;
+    })
+    .finally(() => {
+      inFlight.delete(userId);
+      emit(userId, { syncing: false });
+    });
   inFlight.set(userId, task);
   return task;
 }
-async function runSync(userId: string) {
-  if (!navigator.onLine) return;
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-  if (session?.user.id !== userId) return;
-  // Parent records first. Upsert makes retries after an ambiguous network failure safe.
-  for (const local of await db.localProperties
-    .where("user_id")
-    .equals(userId)
-    .toArray()) {
-    if (local.sync_status !== "pending_create" && local.sync_status !== "error")
-      continue;
-    const { sync_status, local_updated_at, sync_error, ...row } = local;
-    void sync_status;
-    void local_updated_at;
-    void sync_error;
-    const { error } = await supabase
-      .from("properties")
-      .upsert(row, { onConflict: "id" });
-    await db.localProperties.update(local.id, {
-      sync_status: error ? "error" : "synced",
-      sync_error: error?.message,
-    });
-  }
-  for (const local of await db.localVisits
-    .where("user_id")
-    .equals(userId)
-    .toArray()) {
-    if (local.sync_status !== "pending_create" && local.sync_status !== "error")
-      continue;
-    const parent = await db.localProperties.get(local.property_id);
-    if (parent?.sync_status !== "synced") continue;
-    const { sync_status, local_updated_at, sync_error, ...row } = local;
-    void sync_status;
-    void local_updated_at;
-    void sync_error;
-    const { error } = await supabase
-      .from("visits")
-      .upsert(row, { onConflict: "id" });
-    await db.localVisits.update(local.id, {
-      sync_status: error ? "error" : "synced",
-      sync_error: error?.message,
-    });
-  }
-  const [properties, visits] = await Promise.all([
-    supabase.from("properties").select("*").eq("user_id", userId),
-    supabase.from("visits").select("*").eq("user_id", userId),
-  ]);
-  if (properties.error) throw properties.error;
-  if (visits.error) throw visits.error;
-  await db.transaction("rw", db.localProperties, db.localVisits, async () => {
-    const remoteProperties = properties.data as Property[],
-      remoteVisits = visits.data as Visit[];
-    for (const p of remoteProperties) {
-      const local = await db.localProperties.get(p.id);
-      if (!local || local.sync_status === "synced")
-        await db.localProperties.put({
-          ...p,
-          sync_status: "synced",
-          local_updated_at: p.updated_at,
-        } as LocalProperty);
-    }
-    for (const v of remoteVisits) {
-      const local = await db.localVisits.get(v.id);
-      if (!local || local.sync_status === "synced")
-        await db.localVisits.put({
-          ...v,
-          sync_status: "synced",
-          local_updated_at: v.updated_at,
-        } as LocalVisit);
-    }
-    const propertyIds = new Set(remoteProperties.map((p) => p.id)),
-      visitIds = new Set(remoteVisits.map((v) => v.id));
-    for (const p of await db.localProperties
-      .where("user_id")
-      .equals(userId)
-      .toArray())
-      if (p.sync_status === "synced" && !propertyIds.has(p.id))
-        await db.localProperties.delete(p.id);
-    for (const v of await db.localVisits
-      .where("user_id")
-      .equals(userId)
-      .toArray())
-      if (v.sync_status === "synced" && !visitIds.has(v.id))
-        await db.localVisits.delete(v.id);
-  });
+export function scheduleSync(userId: string) {
+  const first = firstChange.get(userId) ?? Date.now();
+  firstChange.set(userId, first);
+  clearTimeout(timers.get(userId));
+  timers.set(
+    userId,
+    setTimeout(
+      () => {
+        void synchronize(userId).catch(() => {});
+      },
+      Math.min(700, Math.max(0, 4000 - (Date.now() - first))),
+    ),
+  );
 }
