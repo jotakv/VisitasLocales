@@ -1,0 +1,31 @@
+{
+  "schema_id": "commercial-to-residential-zaragoza",
+  "schema_version": "0.2.0",
+  "extends": {
+    "schema_id": "commercial-to-residential",
+    "schema_version": "0.2.0"
+  },
+  "municipality": "Zaragoza",
+  "metadata": {
+    "purpose": "Recogida de datos; no evalúa normativa ni viabilidad."
+  },
+  "overrides": {
+    "municipal_consultation": {
+      "helpText": "Registrar la consulta al Ayuntamiento de Zaragoza y su expediente si existe."
+    }
+  },
+  "addFields": [
+    {
+      "section_id": "planning",
+      "field": {
+        "id": "zgz_commercial_axis_check",
+        "type": "textarea",
+        "label": "Comprobación municipal de eje comercial / ordenanza aplicable",
+        "required": false,
+        "critical": false,
+        "defaultSourceType": "municipal_check",
+        "helpText": "Anotar únicamente la información recibida y su fuente. Pendiente de confirmar si no existe respuesta municipal."
+      }
+    }
+  ]
+}

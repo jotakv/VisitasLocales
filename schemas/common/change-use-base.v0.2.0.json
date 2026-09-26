@@ -1,0 +1,2539 @@
+{
+  "schema_id": "commercial-to-residential",
+  "schema_version": "0.2.0",
+  "description": "Inspección descriptiva para posible cambio de uso. Guardar no finaliza ni analiza la visita.",
+  "sections": [
+    {
+      "id": "identification",
+      "title": "01 · IDENTIFICACIÓN DEL INMUEBLE",
+      "kind": "questions",
+      "fields": [
+        {
+          "id": "address",
+          "type": "text",
+          "label": "Dirección",
+          "required": true,
+          "critical": false,
+          "defaultSourceType": "seller_claim"
+        },
+        {
+          "id": "floor_declared",
+          "type": "text",
+          "label": "Planta declarada",
+          "required": true,
+          "critical": true,
+          "defaultSourceType": "seller_claim"
+        },
+        {
+          "id": "door",
+          "type": "text",
+          "label": "Puerta",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "seller_claim"
+        },
+        {
+          "id": "cadastral_reference",
+          "type": "text",
+          "label": "Referencia catastral",
+          "required": true,
+          "critical": false,
+          "defaultSourceType": "documentary",
+          "validation": {
+            "pattern": "^[A-Za-z0-9]{20}$"
+          },
+          "helpText": "20 caracteres. Copiar del documento; no deducir la referencia."
+        },
+        {
+          "id": "asking_price",
+          "type": "number",
+          "label": "Precio anunciado",
+          "required": true,
+          "critical": false,
+          "defaultSourceType": "seller_claim",
+          "unit": "€",
+          "validation": {
+            "min": 0
+          }
+        },
+        {
+          "id": "negotiable_price",
+          "type": "boolean",
+          "label": "¿Precio negociable?",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "seller_claim"
+        },
+        {
+          "id": "contact_name",
+          "type": "text",
+          "label": "Agencia / propietario",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "seller_claim"
+        },
+        {
+          "id": "contact_phone",
+          "type": "text",
+          "label": "Teléfono",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "seller_claim",
+          "inputMode": "tel"
+        },
+        {
+          "id": "built_area",
+          "type": "measurement",
+          "label": "Superficie construida",
+          "required": true,
+          "critical": false,
+          "defaultSourceType": "documentary",
+          "unit": "m²",
+          "validation": {
+            "min": 0
+          }
+        },
+        {
+          "id": "declared_usable_area",
+          "type": "measurement",
+          "label": "Superficie útil declarada",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "seller_claim",
+          "unit": "m²",
+          "validation": {
+            "min": 0
+          }
+        },
+        {
+          "id": "current_use",
+          "type": "text",
+          "label": "Uso actual",
+          "required": true,
+          "critical": false,
+          "defaultSourceType": "observed"
+        },
+        {
+          "id": "cadastral_use",
+          "type": "text",
+          "label": "Uso catastral",
+          "required": true,
+          "critical": false,
+          "defaultSourceType": "documentary"
+        },
+        {
+          "id": "construction_year",
+          "type": "number",
+          "label": "Año de construcción",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "documentary",
+          "validation": {
+            "min": 1000,
+            "max": 2200
+          }
+        },
+        {
+          "id": "occupancy",
+          "type": "select",
+          "label": "Estado de ocupación",
+          "required": true,
+          "critical": false,
+          "defaultSourceType": "seller_claim",
+          "options": [
+            "Vacío",
+            "Actividad en uso",
+            "Arrendado",
+            "Ocupado sin título declarado",
+            "Desconocido"
+          ]
+        },
+        {
+          "id": "community_fees",
+          "type": "number",
+          "label": "Gastos de comunidad",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "documentary",
+          "unit": "€/mes",
+          "validation": {
+            "min": 0
+          }
+        },
+        {
+          "id": "ibi",
+          "type": "number",
+          "label": "IBI anual",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "documentary",
+          "unit": "€/año",
+          "validation": {
+            "min": 0
+          }
+        },
+        {
+          "id": "known_charges",
+          "type": "textarea",
+          "label": "Cargas conocidas",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "seller_claim"
+        },
+        {
+          "id": "available_documents",
+          "type": "checklist",
+          "label": "Documentación disponible",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "documentary",
+          "options": [
+            {
+              "value": "nota_simple",
+              "label": "Nota simple"
+            },
+            {
+              "value": "escritura",
+              "label": "Escritura"
+            },
+            {
+              "value": "ficha_catastral",
+              "label": "Ficha catastral"
+            },
+            {
+              "value": "planos",
+              "label": "Planos"
+            },
+            {
+              "value": "estatutos",
+              "label": "Estatutos"
+            },
+            {
+              "value": "titulo_constitutivo",
+              "label": "Título constitutivo"
+            },
+            {
+              "value": "division_horizontal",
+              "label": "División horizontal"
+            },
+            {
+              "value": "licencia_original",
+              "label": "Licencia original"
+            },
+            {
+              "value": "licencia_actividad",
+              "label": "Licencia de actividad"
+            },
+            {
+              "value": "proyecto_edificio",
+              "label": "Proyecto del edificio"
+            },
+            {
+              "value": "certificado_energetico",
+              "label": "Certificado energético"
+            },
+            {
+              "value": "actas",
+              "label": "Actas de comunidad"
+            }
+          ],
+          "helpText": "Marca lo que está disponible. La disponibilidad no acredita por sí sola su contenido."
+        }
+      ]
+    },
+    {
+      "id": "building_position",
+      "title": "02 · SITUACIÓN DEL LOCAL EN EL EDIFICIO",
+      "kind": "questions",
+      "fields": [
+        {
+          "id": "floor_type",
+          "type": "select",
+          "label": "Planta / tipología",
+          "required": true,
+          "critical": true,
+          "defaultSourceType": "observed",
+          "options": [
+            "Planta baja",
+            "Semisótano",
+            "Sótano",
+            "Entreplanta",
+            "Otro"
+          ]
+        },
+        {
+          "id": "pavement_level",
+          "type": "measurement",
+          "label": "Cota respecto a la acera",
+          "required": true,
+          "critical": true,
+          "defaultSourceType": "observed",
+          "unit": "m",
+          "validation": {},
+          "helpText": "Negativa si está por debajo de la acera."
+        },
+        {
+          "id": "access_type",
+          "type": "select",
+          "label": "Tipo de acceso",
+          "required": true,
+          "critical": true,
+          "defaultSourceType": "observed",
+          "options": [
+            "Calle",
+            "Portal",
+            "Mixto",
+            "Otro"
+          ]
+        },
+        {
+          "id": "street_access",
+          "type": "boolean",
+          "label": "Acceso desde la calle",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "observed"
+        },
+        {
+          "id": "portal_access",
+          "type": "boolean",
+          "label": "Acceso desde el portal",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "observed"
+        },
+        {
+          "id": "access_steps",
+          "type": "boolean",
+          "label": "¿Hay escalones?",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "observed"
+        },
+        {
+          "id": "access_ramp",
+          "type": "boolean",
+          "label": "¿Hay rampa?",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "observed"
+        },
+        {
+          "id": "access_width",
+          "type": "measurement",
+          "label": "Anchura de acceso",
+          "required": true,
+          "critical": true,
+          "defaultSourceType": "observed",
+          "unit": "m",
+          "validation": {
+            "min": 0
+          }
+        },
+        {
+          "id": "access_height",
+          "type": "measurement",
+          "label": "Altura de acceso",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "observed",
+          "unit": "m",
+          "validation": {
+            "min": 0
+          }
+        },
+        {
+          "id": "public_access_path",
+          "type": "textarea",
+          "label": "Recorrido desde la vía pública",
+          "required": true,
+          "critical": true,
+          "defaultSourceType": "observed"
+        },
+        {
+          "id": "independent_access",
+          "type": "boolean",
+          "label": "Acceso independiente",
+          "required": true,
+          "critical": true,
+          "defaultSourceType": "observed"
+        },
+        {
+          "id": "common_areas_transit",
+          "type": "boolean",
+          "label": "Tránsito por zonas comunes",
+          "required": true,
+          "critical": true,
+          "defaultSourceType": "observed"
+        },
+        {
+          "id": "possible_portal_access",
+          "type": "boolean",
+          "label": "Posible acceso mediante el portal",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "architect_check"
+        },
+        {
+          "id": "previous_floor_homes",
+          "type": "boolean",
+          "label": "Viviendas anteriores en esta planta",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "seller_claim"
+        },
+        {
+          "id": "other_conversions",
+          "type": "boolean",
+          "label": "Otros locales convertidos",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "seller_claim"
+        },
+        {
+          "id": "conversion_precedents",
+          "type": "boolean",
+          "label": "Precedentes de cambio de uso",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "seller_claim"
+        }
+      ]
+    },
+    {
+      "id": "facade",
+      "title": "03 · FACHADA",
+      "kind": "questions",
+      "fields": [
+        {
+          "id": "facade_width",
+          "type": "measurement",
+          "label": "Ancho total de fachada",
+          "required": true,
+          "critical": true,
+          "defaultSourceType": "observed",
+          "unit": "m",
+          "validation": {
+            "min": 0
+          }
+        },
+        {
+          "id": "facade_count",
+          "type": "number",
+          "label": "Número de fachadas",
+          "required": true,
+          "critical": true,
+          "defaultSourceType": "observed",
+          "validation": {
+            "min": 0
+          }
+        },
+        {
+          "id": "facade_sides",
+          "type": "multiselect",
+          "label": "Frentes del local",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "observed",
+          "options": [
+            "Principal",
+            "Secundaria",
+            "Esquina",
+            "Patio",
+            "Medianeras"
+          ]
+        },
+        {
+          "id": "facade_openings",
+          "type": "repeatable",
+          "label": "Huecos de fachada",
+          "required": true,
+          "critical": true,
+          "defaultSourceType": "observed",
+          "fields": [
+            {
+              "id": "opening_name",
+              "type": "text",
+              "label": "Identificador del hueco",
+              "required": true,
+              "critical": false,
+              "defaultSourceType": "observed",
+              "placeholder": "H1, H2…"
+            },
+            {
+              "id": "opening_type",
+              "type": "select",
+              "label": "Tipo",
+              "required": true,
+              "critical": false,
+              "defaultSourceType": "observed",
+              "options": [
+                "Ventana",
+                "Escaparate",
+                "Puerta",
+                "Rejilla",
+                "Otro"
+              ]
+            },
+            {
+              "id": "opening_width",
+              "type": "measurement",
+              "label": "Anchura",
+              "required": true,
+              "critical": false,
+              "defaultSourceType": "observed",
+              "unit": "m",
+              "validation": {
+                "min": 0
+              }
+            },
+            {
+              "id": "opening_height",
+              "type": "measurement",
+              "label": "Altura",
+              "required": true,
+              "critical": false,
+              "defaultSourceType": "observed",
+              "unit": "m",
+              "validation": {
+                "min": 0
+              }
+            },
+            {
+              "id": "opening_to",
+              "type": "select",
+              "label": "Da a",
+              "required": true,
+              "critical": false,
+              "defaultSourceType": "observed",
+              "options": [
+                {
+                  "value": "calle",
+                  "label": "Calle"
+                },
+                {
+                  "value": "patio",
+                  "label": "Patio"
+                },
+                {
+                  "value": "patio_manzana",
+                  "label": "Patio de manzana"
+                },
+                {
+                  "value": "zona_comun",
+                  "label": "Zona común"
+                },
+                {
+                  "value": "interior",
+                  "label": "Interior"
+                },
+                {
+                  "value": "otro",
+                  "label": "Otro"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "modify_shopfront",
+          "type": "boolean",
+          "label": "¿Se prevé modificar escaparates?",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "architect_check"
+        },
+        {
+          "id": "shopfront_to_window",
+          "type": "boolean",
+          "label": "¿Se prevé transformar escaparates en ventanas?",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "architect_check"
+        },
+        {
+          "id": "new_openings",
+          "type": "boolean",
+          "label": "¿Se necesitan nuevos huecos?",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "architect_check"
+        },
+        {
+          "id": "facade_community_ban",
+          "type": "boolean",
+          "label": "¿Consta prohibición comunitaria sobre la fachada?",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "documentary"
+        },
+        {
+          "id": "protected_building",
+          "type": "boolean",
+          "label": "¿Consta protección del edificio?",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "municipal_check"
+        }
+      ],
+      "description": "Comprobaciones críticas: medir y describir los huecos existentes, sin deducir autorización para modificarlos."
+    },
+    {
+      "id": "daylight",
+      "title": "04 · ILUMINACIÓN Y VENTILACIÓN NATURAL",
+      "kind": "questions",
+      "fields": [
+        {
+          "id": "room_daylight",
+          "type": "repeatable",
+          "label": "Posibles espacios",
+          "required": true,
+          "critical": true,
+          "defaultSourceType": "observed",
+          "initialItems": [
+            {
+              "room_name": "Salón"
+            },
+            {
+              "room_name": "Dormitorio 1"
+            },
+            {
+              "room_name": "Dormitorio 2"
+            },
+            {
+              "room_name": "Dormitorio 3"
+            },
+            {
+              "room_name": "Cocina"
+            }
+          ],
+          "fields": [
+            {
+              "id": "room_name",
+              "type": "select",
+              "label": "Espacio",
+              "required": true,
+              "critical": false,
+              "defaultSourceType": "observed",
+              "options": [
+                "Salón",
+                "Dormitorio 1",
+                "Dormitorio 2",
+                "Dormitorio 3",
+                "Cocina"
+              ]
+            },
+            {
+              "id": "room_light",
+              "type": "boolean",
+              "label": "Luz natural",
+              "required": true,
+              "critical": false,
+              "defaultSourceType": "observed"
+            },
+            {
+              "id": "room_opening",
+              "type": "text",
+              "label": "Hueco asociado",
+              "required": true,
+              "critical": false,
+              "defaultSourceType": "observed",
+              "placeholder": "H1, H2 o ninguno"
+            },
+            {
+              "id": "room_openable",
+              "type": "boolean",
+              "label": "Hueco practicable",
+              "required": true,
+              "critical": false,
+              "defaultSourceType": "observed"
+            },
+            {
+              "id": "room_direct_vent",
+              "type": "boolean",
+              "label": "Ventilación directa",
+              "required": true,
+              "critical": false,
+              "defaultSourceType": "observed"
+            },
+            {
+              "id": "room_orientation",
+              "type": "select",
+              "label": "Orientación",
+              "required": false,
+              "critical": false,
+              "defaultSourceType": "observed",
+              "options": [
+                "Norte",
+                "Sur",
+                "Este",
+                "Oeste",
+                "Noreste",
+                "Noroeste",
+                "Sureste",
+                "Suroeste",
+                "No determinada"
+              ]
+            },
+            {
+              "id": "room_notes",
+              "type": "textarea",
+              "label": "Observaciones",
+              "required": false,
+              "critical": false,
+              "defaultSourceType": "observed"
+            }
+          ]
+        },
+        {
+          "id": "apparent_facade_capacity",
+          "type": "select",
+          "label": "Parece existir fachada para",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "observed",
+          "options": [
+            "Estudio",
+            "1 dormitorio",
+            "2 dormitorios",
+            "3 dormitorios",
+            "No determinable"
+          ],
+          "helpText": "Impresión descriptiva; no indica cumplimiento ni viabilidad."
+        }
+      ],
+      "description": "Descripción por posible estancia. No constituye conclusión de viabilidad."
+    },
+    {
+      "id": "height",
+      "title": "05 · ALTURA LIBRE",
+      "kind": "questions",
+      "fields": [
+        {
+          "id": "height_entry",
+          "type": "measurement",
+          "label": "Altura en entrada",
+          "required": true,
+          "critical": true,
+          "defaultSourceType": "observed",
+          "unit": "m",
+          "validation": {
+            "min": 0
+          }
+        },
+        {
+          "id": "central_height",
+          "type": "measurement",
+          "label": "Altura en zona central",
+          "required": true,
+          "critical": true,
+          "defaultSourceType": "observed",
+          "unit": "m",
+          "validation": {
+            "min": 0
+          }
+        },
+        {
+          "id": "height_rear",
+          "type": "measurement",
+          "label": "Altura en zona de fondo",
+          "required": true,
+          "critical": true,
+          "defaultSourceType": "observed",
+          "unit": "m",
+          "validation": {
+            "min": 0
+          }
+        },
+        {
+          "id": "height_beam",
+          "type": "measurement",
+          "label": "Altura bajo vigas",
+          "required": true,
+          "critical": true,
+          "defaultSourceType": "observed",
+          "unit": "m",
+          "validation": {
+            "min": 0
+          }
+        },
+        {
+          "id": "height_false_ceiling",
+          "type": "measurement",
+          "label": "Altura bajo falso techo",
+          "required": true,
+          "critical": true,
+          "defaultSourceType": "observed",
+          "unit": "m",
+          "validation": {
+            "min": 0
+          }
+        },
+        {
+          "id": "false_ceiling",
+          "type": "boolean",
+          "label": "¿Hay falso techo?",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "observed"
+        },
+        {
+          "id": "slab_height_known",
+          "type": "boolean",
+          "label": "¿Se conoce la altura hasta el forjado?",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "observed"
+        },
+        {
+          "id": "ceiling_services",
+          "type": "boolean",
+          "label": "¿Hay instalaciones sobre el falso techo?",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "observed"
+        },
+        {
+          "id": "reduced_height_zones",
+          "type": "boolean",
+          "label": "¿Hay zonas de altura reducida?",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "observed"
+        }
+      ],
+      "description": "Registrar las alturas reales, incluidas las zonas más bajas."
+    },
+    {
+      "id": "geometry",
+      "title": "06 · GEOMETRÍA Y DISTRIBUCIÓN",
+      "kind": "questions",
+      "fields": [
+        {
+          "id": "local_width",
+          "type": "measurement",
+          "label": "Ancho del local",
+          "required": true,
+          "critical": false,
+          "defaultSourceType": "observed",
+          "unit": "m",
+          "validation": {
+            "min": 0
+          }
+        },
+        {
+          "id": "local_depth",
+          "type": "measurement",
+          "label": "Fondo del local",
+          "required": true,
+          "critical": false,
+          "defaultSourceType": "observed",
+          "unit": "m",
+          "validation": {
+            "min": 0
+          }
+        },
+        {
+          "id": "shape",
+          "type": "multiselect",
+          "label": "Forma",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "observed",
+          "options": [
+            "Rectangular",
+            "Cuadrada",
+            "Irregular",
+            "Muy profunda",
+            "Estrecha"
+          ]
+        },
+        {
+          "id": "has_columns",
+          "type": "boolean",
+          "label": "¿Hay pilares?",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "observed"
+        },
+        {
+          "id": "apparent_structural_walls",
+          "type": "boolean",
+          "label": "Muros estructurales aparentes",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "observed"
+        },
+        {
+          "id": "column_count",
+          "type": "number",
+          "label": "Número de pilares",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "observed",
+          "validation": {
+            "min": 0
+          }
+        },
+        {
+          "id": "column_location",
+          "type": "text",
+          "label": "Ubicación de pilares",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "observed"
+        },
+        {
+          "id": "division_without_dark_rooms",
+          "type": "boolean",
+          "label": "Posibilidad aparente de dividir sin crear espacios interiores sin ventanas",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "architect_check"
+        },
+        {
+          "id": "sketch_notes",
+          "type": "textarea",
+          "label": "Croquis: descripción / notas",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "observed",
+          "helpText": "Anota forma, dimensiones y posiciones. Los dibujos y archivos llegarán después."
+        }
+      ]
+    },
+    {
+      "id": "drainage",
+      "title": "07 · SANEAMIENTO",
+      "kind": "questions",
+      "fields": [
+        {
+          "id": "existing_bathroom",
+          "type": "boolean",
+          "label": "Baño existente",
+          "required": true,
+          "critical": true,
+          "defaultSourceType": "observed"
+        },
+        {
+          "id": "has_wc",
+          "type": "boolean",
+          "label": "WC",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "observed"
+        },
+        {
+          "id": "working_wc",
+          "type": "boolean",
+          "label": "WC funcional",
+          "required": true,
+          "critical": true,
+          "defaultSourceType": "observed"
+        },
+        {
+          "id": "drain_location",
+          "type": "textarea",
+          "label": "Ubicación de la bajante",
+          "required": true,
+          "critical": true,
+          "defaultSourceType": "observed"
+        },
+        {
+          "id": "communal_drain",
+          "type": "boolean",
+          "label": "¿La bajante es comunitaria?",
+          "required": true,
+          "critical": true,
+          "defaultSourceType": "seller_claim"
+        },
+        {
+          "id": "other_drains",
+          "type": "boolean",
+          "label": "¿Existen otras bajantes?",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "seller_claim"
+        },
+        {
+          "id": "other_drain_location",
+          "type": "text",
+          "label": "Ubicación de otras bajantes",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "observed"
+        },
+        {
+          "id": "kitchen_near_drain",
+          "type": "boolean",
+          "label": "Posible cocina próxima a la bajante",
+          "required": true,
+          "critical": true,
+          "defaultSourceType": "architect_check"
+        },
+        {
+          "id": "drain_problems",
+          "type": "boolean",
+          "label": "Problemas de saneamiento conocidos",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "seller_claim"
+        },
+        {
+          "id": "evacuation_pump",
+          "type": "boolean",
+          "label": "¿Necesita bombas de evacuación?",
+          "required": true,
+          "critical": true,
+          "defaultSourceType": "seller_claim"
+        },
+        {
+          "id": "gravity_drain",
+          "type": "boolean",
+          "label": "Evacuación por gravedad comprobada",
+          "required": true,
+          "critical": true,
+          "defaultSourceType": "observed"
+        },
+        {
+          "id": "internal_chamber",
+          "type": "boolean",
+          "label": "Arqueta interior",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "observed"
+        },
+        {
+          "id": "accessible_communal_drains",
+          "type": "boolean",
+          "label": "Bajantes comunitarias accesibles",
+          "required": true,
+          "critical": true,
+          "defaultSourceType": "observed"
+        }
+      ],
+      "description": "La existencia de un WC no acredita por sí sola una evacuación adecuada."
+    },
+    {
+      "id": "water",
+      "title": "08 · AGUA",
+      "kind": "questions",
+      "fields": [
+        {
+          "id": "water_individual_connection",
+          "type": "boolean",
+          "label": "Acometida individual",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "observed"
+        },
+        {
+          "id": "water_individual_meter",
+          "type": "boolean",
+          "label": "Contador individual",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "observed"
+        },
+        {
+          "id": "water_shared_meter",
+          "type": "boolean",
+          "label": "Contador comunitario",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "observed"
+        },
+        {
+          "id": "water_active",
+          "type": "boolean",
+          "label": "Suministro de agua dado de alta",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "observed"
+        },
+        {
+          "id": "water_working",
+          "type": "boolean",
+          "label": "Instalación de agua operativa",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "observed"
+        },
+        {
+          "id": "water_meter_location",
+          "type": "text",
+          "label": "Ubicación del contador de agua",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "observed"
+        }
+      ]
+    },
+    {
+      "id": "electricity",
+      "title": "09 · ELECTRICIDAD",
+      "kind": "questions",
+      "fields": [
+        {
+          "id": "electrical_panel",
+          "type": "boolean",
+          "label": "Cuadro eléctrico",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "observed"
+        },
+        {
+          "id": "electricity_meter",
+          "type": "boolean",
+          "label": "Contador eléctrico",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "observed"
+        },
+        {
+          "id": "electricity_capacity",
+          "type": "number",
+          "label": "Potencia disponible declarada",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "seller_claim",
+          "unit": "kW",
+          "validation": {
+            "min": 0
+          }
+        },
+        {
+          "id": "electrical_age",
+          "type": "text",
+          "label": "Antigüedad aparente de la instalación eléctrica",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "observed"
+        },
+        {
+          "id": "electricity_individual_meter",
+          "type": "boolean",
+          "label": "Contador eléctrico individual",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "observed"
+        },
+        {
+          "id": "electricity_active",
+          "type": "boolean",
+          "label": "Suministro eléctrico activo",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "observed"
+        },
+        {
+          "id": "electricity_contracted",
+          "type": "number",
+          "label": "Potencia contratada",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "documentary",
+          "unit": "kW",
+          "validation": {
+            "min": 0
+          }
+        },
+        {
+          "id": "electrical_renewed",
+          "type": "boolean",
+          "label": "Instalación eléctrica renovada",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "seller_claim"
+        }
+      ]
+    },
+    {
+      "id": "ventilation",
+      "title": "10 · VENTILACIÓN COCINA Y BAÑOS",
+      "kind": "questions",
+      "fields": [
+        {
+          "id": "vent_duct",
+          "type": "boolean",
+          "label": "Conducto de ventilación",
+          "required": true,
+          "critical": true,
+          "defaultSourceType": "observed"
+        },
+        {
+          "id": "communal_shunt",
+          "type": "boolean",
+          "label": "Shunt comunitario",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "observed"
+        },
+        {
+          "id": "vent_destination",
+          "type": "text",
+          "label": "Destino del conducto",
+          "required": true,
+          "critical": true,
+          "defaultSourceType": "observed"
+        },
+        {
+          "id": "roof_outlet",
+          "type": "boolean",
+          "label": "Salida a cubierta",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "observed"
+        },
+        {
+          "id": "facade_outlet",
+          "type": "boolean",
+          "label": "Salida a fachada",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "observed"
+        },
+        {
+          "id": "mechanical_vent_without_private",
+          "type": "boolean",
+          "label": "Posible ventilación mecánica sin atravesar propiedad privada",
+          "required": true,
+          "critical": true,
+          "defaultSourceType": "architect_check"
+        }
+      ]
+    },
+    {
+      "id": "damp",
+      "title": "11 · HUMEDADES",
+      "kind": "questions",
+      "fields": [
+        {
+          "id": "damp_signs",
+          "type": "checklist",
+          "label": "Indicios de humedad",
+          "required": true,
+          "critical": false,
+          "defaultSourceType": "observed",
+          "options": [
+            "Ninguna visible",
+            "Capilaridad aparente",
+            "Filtraciones aparentes",
+            "Condensación aparente",
+            "Manchas antiguas",
+            "Olor a humedad"
+          ]
+        },
+        {
+          "id": "damp_location",
+          "type": "textarea",
+          "label": "Ubicación de humedades",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "observed"
+        },
+        {
+          "id": "flood_history",
+          "type": "boolean",
+          "label": "Antecedentes de inundaciones",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "seller_claim"
+        },
+        {
+          "id": "pipe_problems",
+          "type": "boolean",
+          "label": "Problemas de tuberías",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "seller_claim"
+        },
+        {
+          "id": "upstairs_leaks",
+          "type": "boolean",
+          "label": "Filtraciones desde la planta superior",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "seller_claim"
+        },
+        {
+          "id": "previous_damp",
+          "type": "boolean",
+          "label": "Humedades anteriores",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "seller_claim"
+        }
+      ]
+    },
+    {
+      "id": "structure",
+      "title": "12 · ESTRUCTURA Y FORJADOS",
+      "kind": "questions",
+      "fields": [
+        {
+          "id": "structure_signs",
+          "type": "checklist",
+          "label": "Elementos e indicios visibles",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "observed",
+          "options": [
+            "Grietas",
+            "Fisuras",
+            "Pilares",
+            "Vigas",
+            "Deformaciones",
+            "Corrosión",
+            "Daños visibles"
+          ]
+        },
+        {
+          "id": "structure_notes",
+          "type": "textarea",
+          "label": "Observaciones de estructura",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "observed"
+        }
+      ],
+      "description": "Recoger indicios visibles; no realizar diagnóstico estructural."
+    },
+    {
+      "id": "noise",
+      "title": "13 · RUIDO Y AISLAMIENTO",
+      "kind": "questions",
+      "fields": [
+        {
+          "id": "noise_sources",
+          "type": "checklist",
+          "label": "Fuentes de ruido observadas",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "observed",
+          "options": [
+            "Tráfico",
+            "Bares / restaurantes",
+            "Maquinaria",
+            "Ascensor",
+            "Garaje",
+            "Vecinos",
+            "Instalaciones comunitarias"
+          ]
+        },
+        {
+          "id": "leisure_nearby",
+          "type": "boolean",
+          "label": "Locales de ocio próximos",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "observed"
+        },
+        {
+          "id": "garage_nearby",
+          "type": "boolean",
+          "label": "Garaje próximo",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "observed"
+        },
+        {
+          "id": "communal_machinery",
+          "type": "boolean",
+          "label": "Maquinaria comunitaria",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "observed"
+        },
+        {
+          "id": "technical_rooms",
+          "type": "boolean",
+          "label": "Cuartos técnicos próximos",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "observed"
+        }
+      ]
+    },
+    {
+      "id": "communal_services",
+      "title": "14 · INSTALACIONES COMUNITARIAS",
+      "kind": "questions",
+      "fields": [
+        {
+          "id": "communal_services",
+          "type": "checklist",
+          "label": "Instalaciones comunitarias",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "observed",
+          "options": [
+            "Bajantes",
+            "Tuberías",
+            "Saneamiento",
+            "Ventilaciones",
+            "Electricidad",
+            "Telecomunicaciones",
+            "Gas",
+            "PCI",
+            "Otros"
+          ]
+        },
+        {
+          "id": "communal_services_notes",
+          "type": "textarea",
+          "label": "Ubicación / observaciones de instalaciones comunes",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "observed"
+        }
+      ]
+    },
+    {
+      "id": "patios",
+      "title": "15 · PATIOS",
+      "kind": "questions",
+      "fields": [
+        {
+          "id": "patio_exists",
+          "type": "boolean",
+          "label": "¿Existen patios?",
+          "required": true,
+          "critical": true,
+          "defaultSourceType": "observed"
+        },
+        {
+          "id": "patio_ownership",
+          "type": "select",
+          "label": "Carácter del patio",
+          "required": true,
+          "critical": true,
+          "defaultSourceType": "documentary",
+          "options": [
+            "Privativo",
+            "Comunitario",
+            "Comunitario de uso privativo",
+            "No determinado"
+          ],
+          "visibleWhen": {
+            "field": "patio_exists",
+            "operator": "equals",
+            "value": true
+          }
+        },
+        {
+          "id": "patio_width",
+          "type": "measurement",
+          "label": "Ancho del patio",
+          "required": true,
+          "critical": true,
+          "defaultSourceType": "observed",
+          "unit": "m",
+          "validation": {
+            "min": 0
+          },
+          "visibleWhen": {
+            "field": "patio_exists",
+            "operator": "equals",
+            "value": true
+          }
+        },
+        {
+          "id": "patio_depth",
+          "type": "measurement",
+          "label": "Fondo del patio",
+          "required": true,
+          "critical": true,
+          "defaultSourceType": "observed",
+          "unit": "m",
+          "validation": {
+            "min": 0
+          },
+          "visibleWhen": {
+            "field": "patio_exists",
+            "operator": "equals",
+            "value": true
+          }
+        },
+        {
+          "id": "patio_height",
+          "type": "measurement",
+          "label": "Altura del patio",
+          "required": true,
+          "critical": true,
+          "defaultSourceType": "observed",
+          "unit": "m",
+          "validation": {
+            "min": 0
+          },
+          "visibleWhen": {
+            "field": "patio_exists",
+            "operator": "equals",
+            "value": true
+          }
+        },
+        {
+          "id": "patio_open_sky",
+          "type": "boolean",
+          "label": "Abierto al cielo",
+          "required": true,
+          "critical": true,
+          "defaultSourceType": "observed",
+          "visibleWhen": {
+            "field": "patio_exists",
+            "operator": "equals",
+            "value": true
+          }
+        },
+        {
+          "id": "patio_home_windows",
+          "type": "boolean",
+          "label": "Ventanas de viviendas hacia el patio",
+          "required": true,
+          "critical": true,
+          "defaultSourceType": "observed",
+          "visibleWhen": {
+            "field": "patio_exists",
+            "operator": "equals",
+            "value": true
+          }
+        },
+        {
+          "id": "patio_room_vent",
+          "type": "boolean",
+          "label": "Posible ventilación de estancia hacia el patio",
+          "required": true,
+          "critical": true,
+          "defaultSourceType": "observed",
+          "visibleWhen": {
+            "field": "patio_exists",
+            "operator": "equals",
+            "value": true
+          }
+        },
+        {
+          "id": "patio_notes",
+          "type": "textarea",
+          "label": "Observaciones del patio",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "observed",
+          "visibleWhen": {
+            "field": "patio_exists",
+            "operator": "equals",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "accessibility",
+      "title": "16 · ACCESIBILIDAD",
+      "kind": "questions",
+      "fields": [
+        {
+          "id": "door_width",
+          "type": "measurement",
+          "label": "Anchura de la puerta",
+          "required": true,
+          "critical": true,
+          "defaultSourceType": "observed",
+          "unit": "m",
+          "validation": {
+            "min": 0
+          }
+        },
+        {
+          "id": "entrance_step",
+          "type": "boolean",
+          "label": "Escalón en la entrada",
+          "required": true,
+          "critical": true,
+          "defaultSourceType": "observed"
+        },
+        {
+          "id": "step_count",
+          "type": "number",
+          "label": "Número de escalones",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "observed",
+          "validation": {
+            "min": 0
+          }
+        },
+        {
+          "id": "path_width",
+          "type": "measurement",
+          "label": "Anchura del recorrido",
+          "required": true,
+          "critical": true,
+          "defaultSourceType": "observed",
+          "unit": "m",
+          "validation": {
+            "min": 0
+          }
+        },
+        {
+          "id": "step_free",
+          "type": "boolean",
+          "label": "Acceso sin escalones",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "observed"
+        },
+        {
+          "id": "accessible_ramp",
+          "type": "boolean",
+          "label": "Rampa de acceso",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "observed"
+        },
+        {
+          "id": "lift",
+          "type": "boolean",
+          "label": "Ascensor",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "observed"
+        }
+      ],
+      "description": "Datos de inspección. No determina cumplimiento del DB-SUA."
+    },
+    {
+      "id": "fire",
+      "title": "17 · INCENDIOS / EVACUACIÓN",
+      "kind": "questions",
+      "fields": [
+        {
+          "id": "street_distance",
+          "type": "measurement",
+          "label": "Distancia aproximada hasta la calle",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "observed",
+          "unit": "m",
+          "validation": {
+            "min": 0
+          }
+        },
+        {
+          "id": "exit_count",
+          "type": "number",
+          "label": "Número de salidas",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "observed",
+          "validation": {
+            "min": 0
+          }
+        },
+        {
+          "id": "escape_route",
+          "type": "textarea",
+          "label": "Configuración del recorrido",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "observed"
+        },
+        {
+          "id": "escape_doors",
+          "type": "textarea",
+          "label": "Puertas del recorrido",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "observed"
+        },
+        {
+          "id": "escape_corridors",
+          "type": "textarea",
+          "label": "Pasillos",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "observed"
+        },
+        {
+          "id": "second_exit",
+          "type": "boolean",
+          "label": "Segunda salida",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "observed"
+        },
+        {
+          "id": "patio_exit",
+          "type": "boolean",
+          "label": "Salida al patio",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "observed"
+        },
+        {
+          "id": "escape_portal",
+          "type": "boolean",
+          "label": "Acceso de evacuación al portal",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "observed"
+        },
+        {
+          "id": "fire_equipment",
+          "type": "boolean",
+          "label": "Instalaciones PCI",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "observed"
+        }
+      ],
+      "description": "Datos de inspección. No determina cumplimiento del DB-SI."
+    },
+    {
+      "id": "community",
+      "title": "18 · COMUNIDAD DE PROPIETARIOS",
+      "kind": "questions",
+      "fields": [
+        {
+          "id": "statutes_ban_home",
+          "type": "boolean",
+          "label": "¿Los estatutos prohíben vivienda?",
+          "required": true,
+          "critical": true,
+          "defaultSourceType": "documentary"
+        },
+        {
+          "id": "ban_change_use",
+          "type": "boolean",
+          "label": "¿Consta prohibición de cambio de uso?",
+          "required": true,
+          "critical": true,
+          "defaultSourceType": "documentary"
+        },
+        {
+          "id": "ban_facade",
+          "type": "boolean",
+          "label": "¿Consta prohibición de modificar fachada?",
+          "required": true,
+          "critical": true,
+          "defaultSourceType": "documentary"
+        },
+        {
+          "id": "ban_windows",
+          "type": "boolean",
+          "label": "¿Consta prohibición de abrir ventanas?",
+          "required": true,
+          "critical": true,
+          "defaultSourceType": "documentary"
+        },
+        {
+          "id": "ban_portal",
+          "type": "boolean",
+          "label": "¿Consta prohibición de usar el portal?",
+          "required": true,
+          "critical": true,
+          "defaultSourceType": "documentary"
+        },
+        {
+          "id": "community_precedents",
+          "type": "textarea",
+          "label": "Precedentes en la comunidad",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "seller_claim"
+        },
+        {
+          "id": "community_conflicts",
+          "type": "textarea",
+          "label": "Conflictos conocidos",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "seller_claim"
+        },
+        {
+          "id": "community_assessments",
+          "type": "textarea",
+          "label": "Derramas",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "seller_claim"
+        },
+        {
+          "id": "planned_works",
+          "type": "textarea",
+          "label": "Obras previstas",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "seller_claim"
+        },
+        {
+          "id": "community_debt",
+          "type": "textarea",
+          "label": "Deuda de comunidad",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "seller_claim"
+        },
+        {
+          "id": "community_requested_docs",
+          "type": "checklist",
+          "label": "Documentos comunitarios solicitados",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "documentary",
+          "options": [
+            "Estatutos",
+            "Título constitutivo",
+            "Últimas actas",
+            "Certificado de deuda"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "planning",
+      "title": "19 · ANTECEDENTES URBANÍSTICOS",
+      "kind": "questions",
+      "fields": [
+        {
+          "id": "municipal_consultation",
+          "type": "boolean",
+          "label": "Consulta al Ayuntamiento realizada",
+          "required": true,
+          "critical": true,
+          "defaultSourceType": "municipal_check"
+        },
+        {
+          "id": "planning_file",
+          "type": "text",
+          "label": "Número de expediente",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "documentary"
+        },
+        {
+          "id": "planning_result",
+          "type": "textarea",
+          "label": "Resultado / información urbanística disponible",
+          "required": true,
+          "critical": true,
+          "defaultSourceType": "municipal_check"
+        },
+        {
+          "id": "planning_report",
+          "type": "boolean",
+          "label": "Informe urbanístico disponible",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "documentary"
+        },
+        {
+          "id": "previous_change_project",
+          "type": "boolean",
+          "label": "Proyecto previo de cambio de uso",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "documentary"
+        },
+        {
+          "id": "architect_studied",
+          "type": "boolean",
+          "label": "Arquitecto ha estudiado el inmueble",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "seller_claim"
+        }
+      ]
+    },
+    {
+      "id": "licences",
+      "title": "20 · LICENCIAS Y USO ACTUAL",
+      "kind": "questions",
+      "fields": [
+        {
+          "id": "original_authorized_use",
+          "type": "text",
+          "label": "Uso original autorizado",
+          "required": true,
+          "critical": false,
+          "defaultSourceType": "documentary"
+        },
+        {
+          "id": "activity_licence",
+          "type": "boolean",
+          "label": "Licencia de actividad disponible",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "documentary"
+        },
+        {
+          "id": "previous_activity",
+          "type": "textarea",
+          "label": "Actividad anterior",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "seller_claim"
+        },
+        {
+          "id": "past_works",
+          "type": "textarea",
+          "label": "Reformas realizadas",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "seller_claim"
+        },
+        {
+          "id": "works_licence",
+          "type": "boolean",
+          "label": "Licencia de reformas disponible",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "documentary"
+        },
+        {
+          "id": "matches_plans",
+          "type": "boolean",
+          "label": "Coincidencia del estado actual con planos / licencias",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "documentary"
+        }
+      ]
+    },
+    {
+      "id": "registry",
+      "title": "21 · REGISTRO Y CATASTRO",
+      "kind": "questions",
+      "fields": [
+        {
+          "id": "registry_reference",
+          "type": "text",
+          "label": "Referencia catastral contrastada",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "documentary",
+          "autoFillFrom": "cadastral_reference"
+        },
+        {
+          "id": "registry_cadastral_use",
+          "type": "text",
+          "label": "Uso catastral contrastado",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "documentary",
+          "autoFillFrom": "cadastral_use"
+        },
+        {
+          "id": "cadastral_area",
+          "type": "measurement",
+          "label": "Superficie según Catastro",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "documentary",
+          "unit": "m²",
+          "validation": {
+            "min": 0
+          }
+        },
+        {
+          "id": "registered_area",
+          "type": "measurement",
+          "label": "Superficie según Registro",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "documentary",
+          "unit": "m²",
+          "validation": {
+            "min": 0
+          }
+        },
+        {
+          "id": "advertised_area",
+          "type": "measurement",
+          "label": "Superficie del anuncio",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "documentary",
+          "unit": "m²",
+          "validation": {
+            "min": 0
+          }
+        },
+        {
+          "id": "area_discrepancies",
+          "type": "textarea",
+          "label": "Discrepancias de superficies / uso",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "documentary"
+        },
+        {
+          "id": "land_record_available",
+          "type": "boolean",
+          "label": "Nota simple disponible",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "documentary"
+        }
+      ]
+    },
+    {
+      "id": "economics",
+      "title": "22 · DATOS ECONÓMICOS",
+      "kind": "questions",
+      "fields": [
+        {
+          "id": "economics_asking_price",
+          "type": "number",
+          "label": "Precio anunciado contrastado",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "seller_claim",
+          "unit": "€",
+          "validation": {
+            "min": 0
+          },
+          "autoFillFrom": "asking_price"
+        },
+        {
+          "id": "minimum_price",
+          "type": "number",
+          "label": "Precio mínimo orientativo",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "seller_claim",
+          "unit": "€",
+          "validation": {
+            "min": 0
+          }
+        },
+        {
+          "id": "conditional_offer",
+          "type": "boolean",
+          "label": "Oferta condicionada a viabilidad urbanística",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "documentary"
+        },
+        {
+          "id": "conditional_deposit",
+          "type": "boolean",
+          "label": "Arras condicionadas a informe favorable",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "documentary"
+        },
+        {
+          "id": "economic_charges",
+          "type": "textarea",
+          "label": "Cargas",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "documentary"
+        },
+        {
+          "id": "mortgage",
+          "type": "textarea",
+          "label": "Hipoteca",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "documentary"
+        },
+        {
+          "id": "economic_ibi",
+          "type": "number",
+          "label": "IBI contrastado",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "documentary",
+          "unit": "€/año",
+          "validation": {
+            "min": 0
+          },
+          "autoFillFrom": "ibi"
+        },
+        {
+          "id": "economic_community",
+          "type": "number",
+          "label": "Comunidad contrastada",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "documentary",
+          "unit": "€/mes",
+          "validation": {
+            "min": 0
+          },
+          "autoFillFrom": "community_fees"
+        },
+        {
+          "id": "economic_assessments",
+          "type": "textarea",
+          "label": "Derramas previstas",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "documentary"
+        }
+      ]
+    },
+    {
+      "id": "photos_checklist",
+      "title": "23 · FOTOS OBLIGATORIAS",
+      "kind": "questions",
+      "fields": [
+        {
+          "id": "photos_taken",
+          "type": "checklist",
+          "label": "Fotos realizadas",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "observed",
+          "options": [
+            {
+              "value": "photo_1",
+              "label": "Fachada completa",
+              "requiresTape": true
+            },
+            {
+              "value": "photo_2",
+              "label": "Calle en ambos sentidos"
+            },
+            {
+              "value": "photo_3",
+              "label": "Portal"
+            },
+            {
+              "value": "photo_4",
+              "label": "Acceso",
+              "requiresTape": true
+            },
+            {
+              "value": "photo_5",
+              "label": "Puerta",
+              "requiresTape": true
+            },
+            {
+              "value": "photo_6",
+              "label": "Escaparates",
+              "requiresTape": true
+            },
+            {
+              "value": "photo_7",
+              "label": "Ventanas",
+              "requiresTape": true
+            },
+            {
+              "value": "photo_8",
+              "label": "Interior desde entrada"
+            },
+            {
+              "value": "photo_9",
+              "label": "Interior desde fondo"
+            },
+            {
+              "value": "photo_10",
+              "label": "Techo",
+              "requiresTape": true
+            },
+            {
+              "value": "photo_11",
+              "label": "Suelo"
+            },
+            {
+              "value": "photo_12",
+              "label": "Paredes"
+            },
+            {
+              "value": "photo_13",
+              "label": "Pilares",
+              "requiresTape": true
+            },
+            {
+              "value": "photo_14",
+              "label": "Baño",
+              "requiresTape": true
+            },
+            {
+              "value": "photo_15",
+              "label": "Bajantes",
+              "requiresTape": true
+            },
+            {
+              "value": "photo_16",
+              "label": "Tuberías"
+            },
+            {
+              "value": "photo_17",
+              "label": "Cuadro eléctrico"
+            },
+            {
+              "value": "photo_18",
+              "label": "Contador electricidad"
+            },
+            {
+              "value": "photo_19",
+              "label": "Contador agua"
+            },
+            {
+              "value": "photo_20",
+              "label": "Patios",
+              "requiresTape": true
+            },
+            {
+              "value": "photo_21",
+              "label": "Rejillas"
+            },
+            {
+              "value": "photo_22",
+              "label": "Conductos"
+            },
+            {
+              "value": "photo_23",
+              "label": "Humedades"
+            },
+            {
+              "value": "photo_24",
+              "label": "Zonas comunes"
+            },
+            {
+              "value": "photo_25",
+              "label": "Escalones / rampas",
+              "requiresTape": true
+            },
+            {
+              "value": "photo_26",
+              "label": "Estructura visible"
+            }
+          ]
+        }
+      ],
+      "description": "Lista para tomar fotos fuera de la app. Todavía no se suben ni se almacenan imágenes."
+    },
+    {
+      "id": "measurements_checklist",
+      "title": "24 · MEDIDAS MÍNIMAS",
+      "kind": "questions",
+      "fields": [
+        {
+          "id": "measurements_taken",
+          "type": "checklist",
+          "label": "Medidas tomadas",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "observed",
+          "options": [
+            {
+              "value": "measure_1",
+              "label": "Fachada",
+              "requiresTape": true
+            },
+            {
+              "value": "measure_2",
+              "label": "Ancho del local",
+              "requiresTape": true
+            },
+            {
+              "value": "measure_3",
+              "label": "Fondo del local",
+              "requiresTape": true
+            },
+            {
+              "value": "measure_4",
+              "label": "Superficie aproximada",
+              "requiresTape": true
+            },
+            {
+              "value": "measure_5",
+              "label": "Alturas",
+              "requiresTape": true
+            },
+            {
+              "value": "measure_6",
+              "label": "Ventanas",
+              "requiresTape": true
+            },
+            {
+              "value": "measure_7",
+              "label": "Alféizar",
+              "requiresTape": true
+            },
+            {
+              "value": "measure_8",
+              "label": "Puerta",
+              "requiresTape": true
+            },
+            {
+              "value": "measure_9",
+              "label": "Escalones",
+              "requiresTape": true
+            },
+            {
+              "value": "measure_10",
+              "label": "Pasillos",
+              "requiresTape": true
+            },
+            {
+              "value": "measure_11",
+              "label": "Patios",
+              "requiresTape": true
+            },
+            {
+              "value": "measure_12",
+              "label": "Baño",
+              "requiresTape": true
+            },
+            {
+              "value": "measure_13",
+              "label": "Posición de bajantes",
+              "requiresTape": true
+            },
+            {
+              "value": "measure_14",
+              "label": "Distancia bajante–cocina",
+              "requiresTape": true
+            },
+            {
+              "value": "measure_15",
+              "label": "Distancia bajante–baño",
+              "requiresTape": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "documents_checklist",
+      "title": "25 · DOCUMENTACIÓN A PEDIR",
+      "kind": "questions",
+      "fields": [
+        {
+          "id": "essential_documents",
+          "type": "checklist",
+          "label": "IMPRESCINDIBLE",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "documentary",
+          "options": [
+            "Referencia catastral",
+            "Ficha catastral",
+            "Nota simple",
+            "Escritura",
+            "Estatutos",
+            "División horizontal"
+          ],
+          "group": "IMPRESCINDIBLE"
+        },
+        {
+          "id": "important_documents",
+          "type": "checklist",
+          "label": "IMPORTANTE",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "documentary",
+          "options": [
+            "Planos",
+            "Licencia original",
+            "Licencia de actividad",
+            "Actas de comunidad",
+            "Certificado de deuda",
+            "Informes urbanísticos"
+          ],
+          "group": "IMPORTANTE"
+        },
+        {
+          "id": "desirable_documents",
+          "type": "checklist",
+          "label": "DESEABLE",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "documentary",
+          "options": [
+            "Proyecto del edificio",
+            "IBI",
+            "Recibo de comunidad",
+            "Certificado energético"
+          ],
+          "group": "DESEABLE"
+        }
+      ],
+      "description": "Registrar lo solicitado. Marcar un documento no significa que esté recibido ni verificado."
+    },
+    {
+      "id": "flags",
+      "title": "26 · RED FLAGS OBSERVADAS",
+      "kind": "questions",
+      "fields": [
+        {
+          "id": "observed_flags",
+          "type": "checklist",
+          "label": "Señales de alerta observadas",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "observed",
+          "options": [
+            {
+              "value": "flag_1",
+              "label": "Sótano / semisótano problemático"
+            },
+            {
+              "value": "flag_2",
+              "label": "Altura potencialmente insuficiente"
+            },
+            {
+              "value": "flag_3",
+              "label": "Fachada limitada"
+            },
+            {
+              "value": "flag_4",
+              "label": "Ausencia de ventanas"
+            },
+            {
+              "value": "flag_5",
+              "label": "Ventilación problemática"
+            },
+            {
+              "value": "flag_6",
+              "label": "Saneamiento problemático"
+            },
+            {
+              "value": "flag_7",
+              "label": "Bomba fecal"
+            },
+            {
+              "value": "flag_8",
+              "label": "Humedad"
+            },
+            {
+              "value": "flag_9",
+              "label": "Acceso problemático"
+            },
+            {
+              "value": "flag_10",
+              "label": "Modificación de elementos comunes"
+            },
+            {
+              "value": "flag_11",
+              "label": "Estatutos potencialmente prohibitivos"
+            },
+            {
+              "value": "flag_12",
+              "label": "Estructura problemática"
+            },
+            {
+              "value": "flag_13",
+              "label": "Discrepancias de superficies"
+            },
+            {
+              "value": "flag_14",
+              "label": "Distribución residencial difícil"
+            },
+            {
+              "value": "flag_15",
+              "label": "Apertura de múltiples huecos"
+            },
+            {
+              "value": "flag_16",
+              "label": "Intervención comunitaria"
+            },
+            {
+              "value": "flag_17",
+              "label": "Otros"
+            }
+          ],
+          "itemDetails": "severity_notes"
+        }
+      ],
+      "description": "Señales introducidas por quien visita el local. Sin motor jurídico ni clasificación automática."
+    },
+    {
+      "id": "summary",
+      "title": "27 · RESUMEN DE VISITA",
+      "kind": "summary",
+      "fields": [
+        {
+          "id": "main_risk",
+          "type": "textarea",
+          "label": "Principal riesgo observado",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "observed"
+        },
+        {
+          "id": "main_strength",
+          "type": "textarea",
+          "label": "Principal punto favorable",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "observed"
+        },
+        {
+          "id": "pending_information",
+          "type": "textarea",
+          "label": "Información pendiente",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "observed"
+        },
+        {
+          "id": "summary_notes",
+          "type": "textarea",
+          "label": "Notas manuales del resumen",
+          "required": false,
+          "critical": false,
+          "defaultSourceType": "observed"
+        }
+      ],
+      "summaryFields": [
+        {
+          "label": "Dirección",
+          "field": "address"
+        },
+        {
+          "label": "Precio",
+          "field": "asking_price"
+        },
+        {
+          "label": "Superficie construida",
+          "field": "built_area"
+        },
+        {
+          "label": "Fachada",
+          "field": "facade_width"
+        },
+        {
+          "label": "Altura central",
+          "field": "central_height"
+        },
+        {
+          "label": "Huecos exteriores",
+          "field": "facade_openings"
+        },
+        {
+          "label": "Saneamiento / bajante",
+          "field": "drain_location"
+        },
+        {
+          "label": "Acceso",
+          "field": "access_type"
+        },
+        {
+          "label": "Humedades",
+          "field": "damp_signs"
+        },
+        {
+          "label": "Comunidad: prohibición cambio de uso",
+          "field": "ban_change_use"
+        },
+        {
+          "label": "Documentación disponible",
+          "field": "available_documents"
+        }
+      ]
+    },
+    {
+      "id": "visit_status",
+      "title": "28 · ESTADO DE LA VISITA",
+      "kind": "status",
+      "fields": [],
+      "description": "Esta visita contiene datos de inspección. La viabilidad urbanística y técnica se analizará en una fase posterior."
+    }
+  ]
+}
