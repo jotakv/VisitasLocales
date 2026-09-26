@@ -1,0 +1,72 @@
+{
+  "schema_id": "commercial-to-residential",
+  "schema_version": "0.1.0",
+  "sections": [
+    {
+      "id": "identification",
+      "title": "Identificación del local",
+      "fields": [
+        {
+          "id": "address",
+          "type": "text",
+          "label": "Dirección",
+          "required": true,
+          "critical": true,
+          "unit": null,
+          "sourceType": "declared"
+        },
+        {
+          "id": "asking_price",
+          "type": "number",
+          "label": "Precio",
+          "required": false,
+          "critical": false,
+          "unit": "EUR",
+          "sourceType": "declared"
+        },
+        {
+          "id": "built_area",
+          "type": "measurement",
+          "label": "Superficie construida",
+          "required": false,
+          "critical": true,
+          "unit": "m²",
+          "sourceType": "documented"
+        }
+      ]
+    },
+    {
+      "id": "inspection",
+      "title": "Primera inspección",
+      "fields": [
+        {
+          "id": "floor",
+          "type": "text",
+          "label": "Planta",
+          "required": false,
+          "critical": false,
+          "unit": null,
+          "sourceType": "observed"
+        },
+        {
+          "id": "central_height",
+          "type": "measurement",
+          "label": "Altura central",
+          "required": false,
+          "critical": true,
+          "unit": "m",
+          "sourceType": "measured"
+        },
+        {
+          "id": "street_access",
+          "type": "boolean",
+          "label": "Acceso desde la calle",
+          "required": false,
+          "critical": false,
+          "unit": null,
+          "sourceType": "observed"
+        }
+      ]
+    }
+  ]
+}

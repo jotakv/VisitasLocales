@@ -1,0 +1,12 @@
+{
+  "schema_id": "commercial-to-residential-zaragoza",
+  "schema_version": "0.1.0",
+  "extends": {
+    "schema_id": "commercial-to-residential",
+    "schema_version": "0.1.0"
+  },
+  "municipality": "Zaragoza",
+  "status": "placeholder",
+  "sections": [],
+  "note": "Sin requisitos normativos todavía. Validar fuentes oficiales en el incremento 2."
+}
