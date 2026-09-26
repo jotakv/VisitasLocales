@@ -14,10 +14,9 @@ import { useLiveQuery } from "dexie-react-hooks";
 import { useAuth, RequireAuth } from "./auth";
 import { configured, supabase } from "./supabase";
 import { db, deviceId } from "./db";
-import { synchronize } from "./sync";
-import { FormEngine, formSchema } from "../../../packages/form-engine";
-import baseSchema from "../../../schemas/common/change-use-base.json";
-const schema = formSchema.parse(baseSchema);
+import { synchronize, useSyncState } from "./sync";
+import { schemaForMunicipality } from "../../../packages/form-engine/registry";
+import { VisitDetail } from "./VisitDetail";
 const message = (e: unknown) =>
   e instanceof Error
     ? e.message
@@ -100,9 +99,9 @@ function Login() {
 function Layout() {
   const { session } = useAuth(),
     [online, setOnline] = useState(navigator.onLine),
-    [syncing, setSyncing] = useState(false),
     [error, setError] = useState("");
   const userId = session!.user.id;
+  const syncState = useSyncState(userId);
   const pending = useLiveQuery(
     async () => {
       const p = await db.localProperties
@@ -110,7 +109,12 @@ function Layout() {
         .equals(userId)
         .toArray();
       const v = await db.localVisits.where("user_id").equals(userId).toArray();
-      return [...p, ...v].filter((r) => r.sync_status !== "synced").length;
+      const a = await db.localVisitAnswers
+        .where("user_id")
+        .equals(userId)
+        .toArray();
+      return [...p, ...v, ...a].filter((r) => r.sync_status !== "synced")
+        .length;
     },
     [userId],
     0,
@@ -119,16 +123,12 @@ function Layout() {
     let active = true;
     const sync = () => {
       setOnline(navigator.onLine);
-      setSyncing(true);
       void synchronize(userId)
         .then(() => {
           if (active) setError("");
         })
         .catch((e) => {
           if (active) setError(message(e));
-        })
-        .finally(() => {
-          if (active) setSyncing(false);
         });
     };
     sync();
@@ -159,23 +159,33 @@ function Layout() {
       </header>
       <div className="statusbar">
         <span className={online ? "dot" : "dot offline"} />
-        {online
-          ? syncing
-            ? "Sincronizando…"
-            : "Con conexión"
-          : "Sin conexión · guardado en este dispositivo"}
+        <span role="status">
+          {!online
+            ? "Sin conexión · guardado en dispositivo"
+            : syncState.syncing
+              ? "Sincronizando…"
+              : syncState.error
+                ? "Error de sincronización"
+                : pending
+                  ? "Guardado en dispositivo"
+                  : "✓ Sincronizado"}
+        </span>
         <span>{pending ? `${pending} pendiente(s)` : "Sin pendientes"}</span>
+        <button
+          className="text-button"
+          disabled={!online || syncState.syncing}
+          onClick={() =>
+            void synchronize(userId)
+              .then(() => setError(""))
+              .catch((e) => setError(message(e)))
+          }
+        >
+          Sincronizar
+        </button>
       </div>
-      {error && (
+      {(syncState.error || error) && (
         <p className="notice" role="alert">
-          {error} Los datos locales se conservan.{" "}
-          <button
-            onClick={() =>
-              void synchronize(userId).catch((e) => setError(message(e)))
-            }
-          >
-            Reintentar
-          </button>
+          {syncState.error || error} Los datos locales se conservan.
         </p>
       )}
       <main key={userId}>
@@ -195,6 +205,26 @@ function Dashboard() {
     () => db.localProperties.where("user_id").equals(session!.user.id).count(),
     [session?.user.id],
     0,
+  );
+  const drafts = useLiveQuery(
+    async () => {
+      const visits = await db.localVisits
+        .where("user_id")
+        .equals(session!.user.id)
+        .filter((v) => v.status === "draft")
+        .toArray();
+      return Promise.all(
+        visits
+          .sort((a, b) => b.started_at.localeCompare(a.started_at))
+          .slice(0, 5)
+          .map(async (v) => ({
+            v,
+            p: await db.localProperties.get(v.property_id),
+          })),
+      );
+    },
+    [session?.user.id],
+    [],
   );
   return (
     <>
@@ -221,6 +251,23 @@ function Dashboard() {
       <Link className="button" to="/app/properties/new">
         + Nueva propiedad
       </Link>
+      {drafts.length > 0 && (
+        <section>
+          <h2>Visitas pendientes</h2>
+          <div className="list">
+            {drafts.map(({ v, p }) => (
+              <Link className="card" key={v.id} to={`/app/visits/${v.id}`}>
+                <strong>{p?.address ?? "Visita"}</strong>
+                <p>Continuar visita →</p>
+                <small>
+                  {new Date(v.started_at).toLocaleDateString("es-ES")} · v
+                  {v.schema_version}
+                </small>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
       <p className="hint">
         Primero se guarda en este dispositivo. Después se sincroniza con tu
         cuenta.
@@ -418,8 +465,9 @@ function PropertyDetail() {
               id,
               property_id: p.id,
               user_id: session!.user.id,
-              schema_id: schema.schema_id,
-              schema_version: schema.schema_version,
+              schema_id: schemaForMunicipality(p.municipality).schema_id,
+              schema_version: schemaForMunicipality(p.municipality)
+                .schema_version,
               status: "draft",
               started_at: now,
               completed_at: null,
@@ -448,6 +496,7 @@ function PropertyDetail() {
               Visita · {new Date(v.started_at).toLocaleDateString("es-ES")}
             </h3>
             <span className="badge">Borrador</span>
+            <p>Continuar visita →</p>
             <small>
               {" "}
               ·{" "}
@@ -458,47 +507,6 @@ function PropertyDetail() {
           </Link>
         ))}
       </div>
-    </>
-  );
-}
-function VisitDetail() {
-  const { visitId } = useParams(),
-    { session } = useAuth();
-  const data = useLiveQuery(async () => {
-    const v = await db.localVisits.get(visitId!);
-    if (!v || v.user_id !== session!.user.id) return null;
-    const p = await db.localProperties.get(v.property_id);
-    return { v, p: p?.user_id === session!.user.id ? p : null };
-  }, [visitId, session?.user.id]);
-  if (data === undefined) return <p>Cargando visita…</p>;
-  if (!data) return <p>Visita no disponible en esta cuenta o dispositivo.</p>;
-  const { v, p } = data;
-  return (
-    <>
-      <Link className="back" to={`/app/properties/${v.property_id}`}>
-        ← Inmueble
-      </Link>
-      <p className="eyebrow">VISITA TÉCNICA</p>
-      <h1>{p?.address ?? "Visita"}</h1>
-      <div className="card">
-        <span className="badge">{v.status}</span>
-        <p>{new Date(v.started_at).toLocaleString("es-ES")}</p>
-        <small>
-          {v.schema_id} · v{v.schema_version}
-        </small>
-        <p role="status">
-          {v.sync_status === "synced"
-            ? "Guardada en este dispositivo y sincronizada con Supabase"
-            : "Guardada en este dispositivo · pendiente de sincronizar"}
-        </p>
-        {v.sync_error && <p role="alert">{v.sync_error}</p>}
-      </div>
-      <h2>Formulario de demostración</h2>
-      <p className="notice">
-        Estos campos se generan desde el esquema JSON. Sus respuestas todavía no
-        se guardan; el autosave llegará en el incremento 2.
-      </p>
-      <FormEngine schema={schema} />
     </>
   );
 }

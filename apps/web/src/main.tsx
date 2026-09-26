@@ -1,6 +1,6 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { BrowserRouter } from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { registerSW } from "virtual:pwa-register";
 import { AuthProvider } from "./auth";
 import { App } from "./App";
@@ -10,12 +10,18 @@ registerSW({
     window.dispatchEvent(new Event("pwa-ready"));
   },
 });
-createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <BrowserRouter>
+const router = createBrowserRouter([
+  {
+    path: "*",
+    element: (
       <AuthProvider>
         <App />
       </AuthProvider>
-    </BrowserRouter>
+    ),
+  },
+]);
+createRoot(document.getElementById("root")!).render(
+  <StrictMode>
+    <RouterProvider router={router} />
   </StrictMode>,
 );

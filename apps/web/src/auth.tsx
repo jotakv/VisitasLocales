@@ -7,36 +7,54 @@ import {
 } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { Navigate } from "react-router-dom";
-import { supabase } from "./supabase";
+import { supabase, authStorageKey } from "./supabase";
+import { readCachedSession } from "./cached-session";
 const AuthContext = createContext<{
   session: Session | null;
   loading: boolean;
 }>({ session: null, loading: true });
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [session, setSession] = useState<Session | null>(null),
-    [loading, setLoading] = useState(true);
+  const [session, setSession] = useState<Session | null>(() =>
+      readCachedSession(authStorageKey, localStorage),
+    ),
+    [loading, setLoading] = useState(
+      () =>
+        !readCachedSession(authStorageKey, localStorage) && navigator.onLine,
+    );
   useEffect(() => {
     let active = true;
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, value) => {
-      if (active) {
+      if (active && (navigator.onLine || value || _event === "SIGNED_OUT")) {
         setSession(value);
         setLoading(false);
       }
     });
-    void supabase.auth
-      .getSession()
-      .then(({ data }) => {
-        if (active) {
-          setSession(data.session);
-          setLoading(false);
-        }
-      })
-      .catch(() => {
-        if (active) setLoading(false);
-      });
+    const refresh = () => {
+      if (!navigator.onLine) return;
+      void supabase.auth.startAutoRefresh();
+      void supabase.auth
+        .getSession()
+        .then(({ data }) => {
+          if (active) {
+            setSession(data.session);
+            setLoading(false);
+          }
+        })
+        .catch(() => {
+          if (active) setLoading(false);
+        });
+    };
+    refresh();
+    const pause = () => {
+      void supabase.auth.stopAutoRefresh();
+    };
+    window.addEventListener("online", refresh);
+    window.addEventListener("offline", pause);
     return () => {
+      window.removeEventListener("online", refresh);
+      window.removeEventListener("offline", pause);
       active = false;
       subscription.unsubscribe();
     };

@@ -344,3 +344,261 @@ button:focus-visible {
     padding: 20px;
   }
 }
+/* Mobile inspection: one section at a time, no hover-dependent actions. */
+select,
+textarea {
+  width: 100%;
+  min-height: 48px;
+  padding: 12px;
+  border: 1px solid #cad3c6;
+  border-radius: 9px;
+  background: #fff;
+  color: #183d32;
+  font: inherit;
+  font-size: 16px;
+  margin-top: 7px;
+}
+textarea {
+  resize: vertical;
+}
+select:focus,
+textarea:focus {
+  outline: 2px solid #548665;
+  outline-offset: 2px;
+}
+input {
+  font-size: 16px;
+}
+.statusbar {
+  position: sticky;
+  top: 0;
+  z-index: 15;
+  background: #f5f4eef5;
+  min-height: 48px;
+  padding: 4px 12px;
+  flex-wrap: wrap;
+}
+.statusbar .text-button {
+  margin-left: auto;
+  min-height: 44px;
+}
+.inspection {
+  min-width: 0;
+}
+.inspection h1 {
+  font-size: clamp(24px, 5vw, 36px);
+  overflow-wrap: anywhere;
+}
+.inspection-summary {
+  background: #e8eddf;
+  padding: 16px;
+  border-radius: 14px;
+}
+.saved {
+  font-size: 13px;
+  margin: 10px 0;
+}
+.save-error {
+  color: #9c2d1f;
+}
+.progress-label {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+  font-size: 14px;
+}
+progress {
+  width: 100%;
+  height: 12px;
+  accent-color: #285442;
+}
+.counts {
+  font-size: 13px;
+}
+.inspection-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.inspection-actions button {
+  font-size: 13px;
+  padding: 12px;
+  flex: 1 1 auto;
+}
+.section-title {
+  margin: 28px 0 16px;
+  scroll-margin-top: 90px;
+}
+.section-title > p {
+  font-size: 14px;
+}
+.section-title h2 {
+  font-size: 22px;
+}
+.question {
+  border: 1px solid #dce1d7;
+  background: #fffefa;
+  border-radius: 12px;
+  padding: 16px;
+  margin: 14px 0;
+  scroll-margin-top: 90px;
+}
+.question > label {
+  margin-bottom: 4px;
+  font-weight: 650;
+}
+.question small {
+  display: block;
+  margin-top: 6px;
+}
+.question > input,
+.question > textarea,
+.question > select {
+  margin-bottom: 6px;
+}
+.answer-details {
+  margin-top: 14px;
+  border-top: 1px solid #e0e5dc;
+  padding-top: 8px;
+}
+.answer-details summary {
+  font-size: 12px;
+  cursor: pointer;
+  padding: 8px 0;
+  min-height: 44px;
+  color: #4c6658;
+}
+.answer-details label {
+  margin: 8px 0;
+}
+.check-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  margin: 0;
+  padding: 7px 0;
+}
+.check-option input[type="checkbox"] {
+  flex: 0 0 22px;
+  margin: 0;
+}
+.check-option small {
+  display: inline;
+}
+.checklist .text-button {
+  display: block;
+}
+.flag-detail {
+  padding: 12px;
+  background: #f4f3e9;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+.repeatable fieldset {
+  padding: 12px;
+  margin: 14px 0;
+  min-width: 0;
+}
+.repeatable legend {
+  font-size: 13px;
+}
+.repeatable > button {
+  width: 100%;
+  margin-top: 8px;
+}
+.subfield {
+  margin-bottom: 16px;
+}
+.subfield label {
+  margin-bottom: 4px;
+}
+.section-nav {
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  bottom: 76px;
+  z-index: 8;
+  padding: 12px 0;
+  background: #f5f4eef5;
+}
+.section-nav button {
+  font-size: 14px;
+  padding: 12px;
+}
+.section-nav span {
+  font-size: 12px;
+  white-space: nowrap;
+}
+.inspection-recap {
+  display: block;
+}
+.inspection-recap > div {
+  padding: 12px 0;
+  border-bottom: 1px solid #dce1d7;
+}
+.inspection-recap dd {
+  margin-top: 6px;
+}
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: #142d24a6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.inspection-modal {
+  background: #fffefa;
+  border-radius: 16px;
+  padding: 20px;
+  width: 100%;
+  max-width: 640px;
+  max-height: 85dvh;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+.modal-close {
+  float: right;
+}
+.section-link {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: #edf1e5;
+  color: #193b33;
+  margin: 8px 0;
+  padding: 14px;
+}
+.section-link strong {
+  display: block;
+  font-size: 13px;
+}
+.section-link small {
+  display: block;
+  margin-top: 4px;
+}
+@media (max-width: 480px) {
+  .statusbar {
+    gap: 5px;
+    font-size: 11px;
+  }
+  .statusbar .text-button {
+    font-size: 11px;
+    padding: 6px;
+  }
+  .inspection-modal {
+    padding: 16px;
+  }
+  main {
+    margin-top: 24px;
+  }
+  .question {
+    padding: 14px;
+  }
+}
