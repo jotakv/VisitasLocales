@@ -92,10 +92,12 @@ export function synchronize(userId: string): Promise<void> {
       localStorage.getItem(`lv:lastSync:${userId}`),
   });
   const task = (async () => {
+    let completed: boolean;
     do {
       rerun.delete(userId);
-      await syncOnce(db, remoteFor(userId), userId);
+      completed = await syncOnce(db, remoteFor(userId), userId);
     } while (rerun.has(userId) && navigator.onLine);
+    if (!completed || !navigator.onLine) return;
     const lastSync = new Date().toISOString();
     localStorage.setItem(`lv:lastSync:${userId}`, lastSync);
     emit(userId, { lastSync, error: "" });

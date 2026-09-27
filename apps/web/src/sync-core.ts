@@ -50,7 +50,7 @@ export async function syncOnce(
   userId: string,
   online: () => boolean = () => navigator.onLine,
 ) {
-  if (!online() || (await remote.userId()) !== userId) return;
+  if (!online() || (await remote.userId()) !== userId) return false;
   const failures: string[] = [];
   // Dependencies: properties -> visits -> answers. Each acknowledgement checks the local revision.
   for (const row of await database.localProperties
@@ -251,4 +251,22 @@ export async function syncOnce(
     },
   );
   if (failures.length) throw new Error([...new Set(failures)].join(" · "));
+  const pending = await Promise.all([
+    database.localProperties
+      .where("user_id")
+      .equals(userId)
+      .filter((row) => row.sync_status !== "synced")
+      .count(),
+    database.localVisits
+      .where("user_id")
+      .equals(userId)
+      .filter((row) => row.sync_status !== "synced")
+      .count(),
+    database.localVisitAnswers
+      .where("user_id")
+      .equals(userId)
+      .filter((row) => row.sync_status !== "synced")
+      .count(),
+  ]);
+  return online() && pending.every((count) => count === 0);
 }

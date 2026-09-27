@@ -122,12 +122,10 @@ describe("local answers and additive Dexie upgrade", () => {
   it("upgrades v1 without deleting historical visits or properties", async () => {
     const name = `v1-${crypto.randomUUID()}`;
     const old = new Dexie(name);
-    old
-      .version(1)
-      .stores({
-        localProperties: "id,user_id,sync_status",
-        localVisits: "id,user_id,property_id,sync_status",
-      });
+    old.version(1).stores({
+      localProperties: "id,user_id,sync_status",
+      localVisits: "id,user_id,property_id,sync_status",
+    });
     await old.table("localProperties").put(p);
     await old.table("localVisits").put({ ...v, schema_version: "0.1.0" });
     old.close();
@@ -201,12 +199,12 @@ describe("ordered offline synchronization", () => {
     const database = await fixture(),
       remote = new Remote();
     await save(database);
-    await syncOnce(database, remote, "a", () => false);
+    expect(await syncOnce(database, remote, "a", () => false)).toBe(false);
     expect(remote.calls).toEqual([]);
     expect((await database.localVisitAnswers.toArray())[0].sync_status).toBe(
       "pending_create",
     );
-    await syncOnce(database, remote, "a", () => true);
+    expect(await syncOnce(database, remote, "a", () => true)).toBe(true);
     expect(remote.calls).toEqual(["property", "visit", "answer"]);
     expect((await database.localVisitAnswers.toArray())[0].sync_status).toBe(
       "synced",
@@ -240,7 +238,7 @@ describe("ordered offline synchronization", () => {
       }
       return put(row);
     };
-    await syncOnce(database, remote, "a", () => true);
+    expect(await syncOnce(database, remote, "a", () => true)).toBe(false);
     expect((await database.localVisitAnswers.toArray())[0]).toMatchObject({
       value_json: 3.1,
       sync_status: "pending_create",
@@ -302,13 +300,28 @@ describe("ordered offline synchronization", () => {
       sync_status: "synced",
     });
   });
-  it("does not sync while a different account is authenticated", async () => {
+  it.each([undefined, "b"])(
+    "does not complete sync with invalid session %s",
+    async (sessionUser) => {
+      const database = await fixture(),
+        remote = new Remote();
+      const store: RemoteStore = remote;
+      store.userId = async () => sessionUser;
+      await save(database);
+      expect(await syncOnce(database, store, "a", () => true)).toBe(false);
+      expect(remote.calls).toEqual([]);
+    },
+  );
+  it("does not complete sync when a missing parent leaves operations pending", async () => {
     const database = await fixture(),
       remote = new Remote();
-    remote.userId = async () => "b";
     await save(database);
-    await syncOnce(database, remote, "a", () => true);
+    await database.localProperties.clear();
+    expect(await syncOnce(database, remote, "a", () => true)).toBe(false);
     expect(remote.calls).toEqual([]);
+    expect((await database.localVisitAnswers.toArray())[0].sync_status).toBe(
+      "pending_create",
+    );
   });
   it("retains pending local answers if a remote parent has disappeared", async () => {
     const database = await fixture(),
